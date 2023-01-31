@@ -17,50 +17,28 @@ public class ChessChampions {
         @Override
         public int compareTo(Player other) {
             if (this.age != other.age) {
-                return other.age - this.age;
+                return this.age - other.age;
             }
-            return this.elo - other.elo;
+            return other.elo - this.elo;
         }
     }
 
     public static List<Player> findChampions(List<Player> players) {
         List<Player> champions = new ArrayList<>();
         Collections.sort(players);
-        Player bestPlayer = new Player("", 0, 0);
-        for (int i = 0; i < players.size(); i++) {
+        champions.add(players.get(0));
+        for (int i = 1; i < players.size(); i++) {
+            Player champion = champions.get(champions.size() - 1);
             Player player = players.get(i);
-            boolean isChampion = !isStrictlyOlderAndWeaker(bestPlayer, player);
-            for (int j = i + 1; j < players.size(); j++) {
-                Player other = players.get(j);
-                if (!isChampion  || isOlderAndWeaker(player, other)) {
-                    if (!hasSameAgeAndElo(player, other)) {
-                        isChampion = false;
-                    }
-                    bestPlayer = setBestPlayer(other);
-                    break;
-                }
-            }
-            if (isChampion) {
+            if (isBetterThanTheChampion(champion, player)) {
                 champions.add(player);
             }
         }
         return champions;
     }
 
-    private static Player setBestPlayer(Player newBestPlayer) {
-        return new Player("BestPlayer", newBestPlayer.age, newBestPlayer.elo);
-    }
-
-    private static boolean hasSameAgeAndElo(Player player, Player other) {
-        return player.age == other.age && player.elo == other.elo;
-    }
-
-    private static boolean isOlderAndWeaker(Player player, Player other) {
-        return player.age >= other.age && player.elo <= other.elo;
-    }
-
-    private static boolean isStrictlyOlderAndWeaker(Player bestPlayer, Player player) {
-        return player.age > bestPlayer.age && player.elo < bestPlayer.elo;
+    private static boolean isBetterThanTheChampion(Player champion, Player player) {
+        return ((player.elo > champion.elo) || (player.age == champion.age && player.elo == champion.elo));
     }
 
     public static void main(String[] args) {
